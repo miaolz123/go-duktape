@@ -271,6 +271,13 @@ func (ctx *Context) pushValue(v reflect.Value) error {
 			ctx.PushString(string(v.Interface().([]byte)))
 			return nil
 		}
+		if v.Type().Elem().Kind() == reflect.Interface {
+			var vs []reflect.Value
+			for i := 0; i < v.Len(); i++ {
+				vs = append(vs, v.Index(i))
+			}
+			return ctx.pushValues(vs)
+		}
 
 		fallthrough
 	default:
